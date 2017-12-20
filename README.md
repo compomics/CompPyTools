@@ -3,8 +3,11 @@
 Small Python scripts developed in the CompOmics group.
 
 ## MSF and MGF to MS2PIP SpecLib
-Reads an MSF file (SQLite DB), combines it with the matched (multiple) MGF files and writes a spectral library as 1 MS2PIP PEPREC and MGF file. Filters by a given FDR threshold, using q-values calculated from decoy hits or 
-from Percolator.
+Reads an MSF file (SQLite DB), combines it with the matched (multiple) MGF files and writes a spectral library as 1 MS2PIP PEPREC and MGF file. Filters by a given FDR threshold, using q-values calculated from decoy hits or from Percolator.
+
+*MSF_to_MS2PIP_SpecLib.py*  
+**Input:** MSF and MGF files  
+**Output:** Matched PEPREC and MGF file  
 
 ```
 usage: MSF_to_MS2PIP_SpecLib.py [-h] [-s MSF_FOLDER] [-g MGF_FOLDER]
@@ -27,7 +30,11 @@ optional arguments:
 ```
 
 ## Download PRIDE Project
-Download PRIDE project files for a given PRIDE identifier.
+Download PRIDE project files for a given PRIDE identifier. With the `-f` argument certain file types can be chosen for download.
+
+*Download_PRIDE_Project.py*  
+**Input:** PRIDE Archive identifier  
+**Output:** Downloaded files, sorted in folders by file type  
 
 ```
 usage: Download_PRIDE_Project.py [-h] [-f FILETYPES [FILETYPES ...]] projectID

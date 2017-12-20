@@ -1,16 +1,31 @@
-# ------------------ ABOUT ------------------
-# 
-# SCRIPT: Parse Sequest MSF output to MS2PIP Spectral Library
-# AUTHOR: Ralf Gabriels
-# DATE:   13/12/2017
-# REV:    1
-#
-# PURPOSE: Reads an MSF file (SQLite DB), combines it with the matched (multiple) MGF files 
-#          and writes a spectral library as 1 MS2PIP PEPREC and MGF file.
-#          Filters to a given FDR threshold, using q-values calculated from decoy hits or 
-#          from Percolator.
-#
+"""
+## MSF and MGF to MS2PIP SpecLib
+Reads an MSF file (SQLite DB), combines it with the matched (multiple) MGF files and writes a spectral library as 1 MS2PIP PEPREC and MGF file. Filters by a given FDR threshold, using q-values calculated from decoy hits or from Percolator.
 
+*MSF_to_MS2PIP_SpecLib.py*
+**Input:** MSF and MGF files
+**Output:** Matched PEPREC and MGF file
+
+```
+usage: MSF_to_MS2PIP_SpecLib.py [-h] [-s MSF_FOLDER] [-g MGF_FOLDER]
+                                [-o OUTNAME] [-f FDR_CUTOFF] [-p]
+
+Convert Sequest MSF and MGF to MS2PIP spectral library.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s MSF_FOLDER, --msf MSF_FOLDER
+                        Folder with Sequest MSF files (default: "msf")
+  -g MGF_FOLDER, --mgf MGF_FOLDER
+                        Folder with MGF spectrum files (default: "mgf")
+  -o OUTNAME, --out OUTNAME
+                        Name for output files (default: "SpecLib")
+  -f FDR_CUTOFF, --fdr FDR_CUTOFF
+                        FDR cut-off value to filter PSMs (default: 0.01)
+  -p                    Use Percolator q-values instead of calculating them
+                        from TDS (default: False)
+```
+"""
 
 # --------------
 # Import modules
@@ -39,8 +54,8 @@ def CalcQVal(Peptides, conn):
     PeptideScores.sort_values('ScoreValue', ascending=False, inplace=True)
     PeptideScores['CumSum_Decoys'] = PeptideScores['Decoy'].cumsum()
     PeptideScores['CumSum_Targets'] = (~PeptideScores['Decoy']).cumsum()
-    PeptideScores['q-Value'] = PeptideScores['CumSum_Decoys']/PeptideScores['CumSum_Targets']
-    PeptideScores = PeptideScores[PeptideScores['Decoy'] == False][['PeptideID', 'q-Value']]
+    PeptideScores['q-Value'] = PeptideScores['CumSum_Decoys'] / PeptideScores['CumSum_Targets']
+    PeptideScores = PeptideScores[~PeptideScores['Decoy']][['PeptideID', 'q-Value']]
 
     Peptides = Peptides.merge(PeptideScores, on='PeptideID')
 
@@ -70,6 +85,7 @@ def GetPercolatorQVal(Peptides, conn):
 def ConcatPTMs(series):
         return(series.str.cat(sep='|'))
 
+
 def GetPTMs(Peptides, conn):
     AminoAcidModifications = pd.read_sql("select * from 'AminoAcidModifications'", conn)
     PeptidesAminoAcidModifications = pd.read_sql("select * from 'PeptidesAminoAcidModifications'", conn)
@@ -92,7 +108,7 @@ def GetPTMs(Peptides, conn):
     Modifications.sort_values('PositionMS2PIP', inplace=True)
     Modifications['NotationMS2PIP'] = Modifications['PositionMS2PIP'].map(str) + '|' + Modifications['ModificationName']
     MS2PIPmods = pd.DataFrame(Modifications.groupby('PeptideID')['NotationMS2PIP'].apply(ConcatPTMs))
-    MS2PIPmods.rename(columns={'NotationMS2PIP' : 'Modifications'}, inplace=True)
+    MS2PIPmods.rename(columns={'NotationMS2PIP': 'Modifications'}, inplace=True)
     MS2PIPmods.reset_index(inplace=True)
     Peptides = Peptides.merge(MS2PIPmods, on='PeptideID')
 
@@ -115,7 +131,7 @@ def GetSpectrumProperties(Peptides, conn):
 
     SpectrumHeaders = SpectrumHeaders.merge(MassPeaks, on='MassPeakID')
     Peptides = Peptides.merge(SpectrumHeaders, on='SpectrumID')
-    
+
     return(Peptides)
 
 
@@ -141,18 +157,18 @@ def FilterForSpecLib(Peptides, FDR_CutOff):
     Peptides = Peptides[~Peptides.duplicated(['SpectrumID'], keep='first')].copy()
     len_after = len(Peptides)
     print("Removed duplicate spectra: Kept {} out of {} peptides.".format(len_after, len_before))
-    
+
     # Annotate tryptic peptides
     Peptides['Tryptic'] = ((Peptides['Sequence'].str.endswith('K')) | (Peptides['Sequence'].str.endswith('R')))
 
     # Set PeptideID as index
     Peptides.index = Peptides['PeptideID']
-    
+
     return(Peptides)
 
 
 # ------------------------------------------------------------------
-# Scan multiple MGF files for spectra present in Peptides data frame 
+# Scan multiple MGF files for spectra present in Peptides data frame
 # ------------------------------------------------------------------
 def ScanMGF(df_in, mgf_folder, outname='SpecLib.mgf'):
     with open(outname, 'w') as out:
@@ -162,15 +178,15 @@ def ScanMGF(df_in, mgf_folder, outname='SpecLib.mgf'):
         print("Scanning MGF files: {} runs to do. Now working on run: ".format(len(runs)), end='')
         for run in runs:
             count_runs += 1
-            if count_runs%10 == 0:
+            if count_runs % 10 == 0:
                 print(str(count_runs), end='')
             else:
                 print('.', end='')
-            spec_dict = dict((v,k) for k,v in df_in[(df_in['FileName'] == run)]['FirstScan'].to_dict().items())
-            #print(spec_dict)
-            #exit(1)
+            spec_dict = dict((v, k) for k, v in df_in[(df_in['FileName'] == run)]['FirstScan'].to_dict().items())
+            # print(spec_dict)
+            # exit(1)
 
-            #Parse file
+            # Parse file
             found = False
             with open('{}/{}.mgf'.format(mgf_folder, str(run)), 'r') as f:
                 for i, line in enumerate(f):
@@ -192,7 +208,7 @@ def ScanMGF(df_in, mgf_folder, outname='SpecLib.mgf'):
 
 
 # ------------------------
-# Write MS2PIP PEPREC file 
+# Write MS2PIP PEPREC file
 # ------------------------
 def WritePEPREC(Peptides, outname='SpecLib.PEPREc'):
     peprec = Peptides[['PeptideID', 'Modifications', 'Sequence', 'Charge']]
@@ -203,50 +219,59 @@ def WritePEPREC(Peptides, outname='SpecLib.PEPREc'):
 # ---------------
 # Argument parser
 # ---------------
-parser = argparse.ArgumentParser(description='Convert Sequest MSF and MGF to MS2PIP spectral library.')
-parser.add_argument('-s', '--msf', dest='msf_folder', action='store', default='msf',
-                    help='Folder with Sequest MSF files (default: "msf")')
-parser.add_argument('-g', '--mgf', dest='mgf_folder', action='store', default='mgf',
-                    help='Folder with MGF spectrum files (default: "mgf")')
-parser.add_argument('-o', '--out', dest='outname', action='store', default='SpecLib',
-                    help='Name for output files (default: "SpecLib")')
-parser.add_argument('-f', '--fdr', dest='FDR_CutOff', action='store', default=0.01, type=float,
-                    help='FDR cut-off value to filter PSMs (default: 0.01)')
-parser.add_argument('-p', dest='percolator', action='store_true', default=False,
-                    help='Use Percolator q-values instead of calculating them from TDS (default: False)')
-args = parser.parse_args()
+def ArgParse():
+    parser = argparse.ArgumentParser(description='Convert Sequest MSF and MGF to MS2PIP spectral library.')
+    parser.add_argument('-s', '--msf', dest='msf_folder', action='store', default='msf',
+                        help='Folder with Sequest MSF files (default: "msf")')
+    parser.add_argument('-g', '--mgf', dest='mgf_folder', action='store', default='mgf',
+                        help='Folder with MGF spectrum files (default: "mgf")')
+    parser.add_argument('-o', '--out', dest='outname', action='store', default='SpecLib',
+                        help='Name for output files (default: "SpecLib")')
+    parser.add_argument('-f', '--fdr', dest='FDR_CutOff', action='store', default=0.01, type=float,
+                        help='FDR cut-off value to filter PSMs (default: 0.01)')
+    parser.add_argument('-p', dest='percolator', action='store_true', default=False,
+                        help='Use Percolator q-values instead of calculating them from TDS (default: False)')
+    args = parser.parse_args()
+
+    return(args)
 
 
 # ------
-# Parse!
+# Run!
 # ------
-msf_files = glob("{}/*.msf".format(args.msf_folder))
+def run():
+    args = ArgParse()
+    msf_files = glob("{}/*.msf".format(args.msf_folder))
 
-msf_count = 0
-for msf_filename in msf_files:
-	msf_count += 1
-	print("\nWorking on MSF file {} of {}...".format(msf_count, len(msf_files)))
+    msf_count = 0
+    for msf_filename in msf_files:
+        msf_count += 1
+        print("\nWorking on MSF file {} of {}...".format(msf_count, len(msf_files)))
 
-	conn = sqlite3.connect(msf_filename)
-	Peptides = pd.read_sql("select * from Peptides;", conn)
-	if args.percolator:
-		Peptides = GetPercolatorQVal(Peptides, conn)
-	else:
-		Peptides = CalcQVal(Peptides, conn)
-	Peptides = GetPTMs(Peptides, conn)
-	Peptides = GetSpectrumProperties(Peptides, conn)
-	Peptides = FilterForSpecLib(Peptides, args.FDR_CutOff)
+        conn = sqlite3.connect(msf_filename)
+        Peptides = pd.read_sql("select * from Peptides;", conn)
+        if args.percolator:
+            Peptides = GetPercolatorQVal(Peptides, conn)
+        else:
+            Peptides = CalcQVal(Peptides, conn)
+        Peptides = GetPTMs(Peptides, conn)
+        Peptides = GetSpectrumProperties(Peptides, conn)
+        Peptides = FilterForSpecLib(Peptides, args.FDR_CutOff)
 
-	outname_appendix = msf_filename
-	outname_appendix = outname_appendix.replace('/', '')
-	outname_appendix = outname_appendix.replace('.msf', '')
+        outname_appendix = msf_filename
+        outname_appendix = outname_appendix.replace('/', '')
+        outname_appendix = outname_appendix.replace('.msf', '')
 
-	ScanMGF(Peptides, args.mgf_folder, outname='{}_{}.mgf'.format(args.outname, outname_appendix))
-	#ScanMGF(Peptides[Peptides['Tryptic']], args.mgf_folder, outname='{}_Tryptic_{}.mgf'.format(args.outname, outname_appendix))
-	#ScanMGF(Peptides[~Peptides['Tryptic']], args.mgf_folder, outname='{}_NonTryptic_{}.mgf'.format(args.outname, outname_appendix))
+        ScanMGF(Peptides, args.mgf_folder, outname='{}_{}.mgf'.format(args.outname, outname_appendix))
+        # ScanMGF(Peptides[Peptides['Tryptic']], args.mgf_folder, outname='{}_Tryptic_{}.mgf'.format(args.outname, outname_appendix))
+        # ScanMGF(Peptides[~Peptides['Tryptic']], args.mgf_folder, outname='{}_NonTryptic_{}.mgf'.format(args.outname, outname_appendix))
 
-	WritePEPREC(Peptides, outname='{}_{}.peprec'.format(args.outname, outname_appendix))
-	#WritePEPREC(Peptides[Peptides['Tryptic']], outname='{}_Tryptic_{}.peprec'.format(args.outname, outname_appendix))
-	#WritePEPREC(Peptides[~Peptides['Tryptic']], outname='{}_NonTryptic_{}.peprec'.format(args.outname, outname_appendix))
+        WritePEPREC(Peptides, outname='{}_{}.peprec'.format(args.outname, outname_appendix))
+        # WritePEPREC(Peptides[Peptides['Tryptic']], outname='{}_Tryptic_{}.peprec'.format(args.outname, outname_appendix))
+        # WritePEPREC(Peptides[~Peptides['Tryptic']], outname='{}_NonTryptic_{}.peprec'.format(args.outname, outname_appendix))
 
-print("Ready!")
+    print("Ready!")
+
+
+if __name__ == "__main__":
+    run()
