@@ -7,11 +7,11 @@ Reads an MSF file (SQLite DB), combines it with the matched (multiple) MGF files
 
 *MSF_to_MS2PIP_SpecLib.py*  
 **Input:** MSF and MGF files  
-**Output:** Matched PEPREC and MGF file  
+**Output:** Matched PEPREC and MGF file (MS2PIP spectral library)
 
 ```
 usage: MSF_to_MS2PIP_SpecLib.py [-h] [-s MSF_FOLDER] [-g MGF_FOLDER]
-                                [-o OUTNAME] [-f FDR_CUTOFF] [-p]
+                                [-o OUTNAME] [-f FDR_CUTOFF] [-p] [-c]
 
 Convert Sequest MSF and MGF to MS2PIP spectral library.
 
@@ -27,6 +27,8 @@ optional arguments:
                         FDR cut-off value to filter PSMs (default: 0.01)
   -p                    Use Percolator q-values instead of calculating them
                         from TDS (default: False)
+  -c                    Combine multiple MSF files into one spectral library
+                        (default: False)
 ```
 
 ## Download PRIDE Project
