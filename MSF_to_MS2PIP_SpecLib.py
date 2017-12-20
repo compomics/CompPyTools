@@ -139,20 +139,20 @@ def GetSpectrumProperties(Peptides, conn):
 # Filter Peptide list for non-redundancy and low q-values
 # -------------------------------------------------------
 def FilterForSpecLib(Peptides, FDR_CutOff):
-    # Filter on Percolator q-value
+    # Filter on q-value
     len_before = len(Peptides)
     Peptides = Peptides[Peptides['q-Value'] <= FDR_CutOff].copy()
     len_after = len(Peptides)
     print("q-value cut-off {}: Kept {} out of {} peptides.".format(FDR_CutOff, len_after, len_before))
 
-    # Remove duplicate peptides and keep the ones with the highest q-value
+    # Remove duplicate peptides: keep the one with the highest q-value
     len_before = len(Peptides)
     Peptides.sort_values('q-Value', inplace=True)
     Peptides = Peptides[~Peptides.duplicated(['Sequence', 'Modifications', 'Charge'], keep='first')].copy()
     len_after = len(Peptides)
     print("Removed duplicate peptides: Kept {} out of {} peptides.".format(len_after, len_before))
 
-    # Remove duplicate peptides and keep the ones with the highest q-value
+    # Remove multiple peptides mapping to the same spectrum: keep the one with the highest q-value
     len_before = len(Peptides)
     Peptides = Peptides[~Peptides.duplicated(['SpectrumID'], keep='first')].copy()
     len_after = len(Peptides)
@@ -263,12 +263,7 @@ def run():
         outname_appendix = outname_appendix.replace('.msf', '')
 
         ScanMGF(Peptides, args.mgf_folder, outname='{}_{}.mgf'.format(args.outname, outname_appendix))
-        # ScanMGF(Peptides[Peptides['Tryptic']], args.mgf_folder, outname='{}_Tryptic_{}.mgf'.format(args.outname, outname_appendix))
-        # ScanMGF(Peptides[~Peptides['Tryptic']], args.mgf_folder, outname='{}_NonTryptic_{}.mgf'.format(args.outname, outname_appendix))
-
         WritePEPREC(Peptides, outname='{}_{}.peprec'.format(args.outname, outname_appendix))
-        # WritePEPREC(Peptides[Peptides['Tryptic']], outname='{}_Tryptic_{}.peprec'.format(args.outname, outname_appendix))
-        # WritePEPREC(Peptides[~Peptides['Tryptic']], outname='{}_NonTryptic_{}.peprec'.format(args.outname, outname_appendix))
 
     print("Ready!")
 
