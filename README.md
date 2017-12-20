@@ -2,6 +2,28 @@
 # CompPyTools
 Small Python scripts developed in the CompOmics group.
 
+## Download PRIDE Project
+Download PRIDE project files for a given PRIDE identifier. With the `-f` argument certain file types can be chosen for download.
+
+*Download_PRIDE_Project.py*  
+**Input:** PRIDE Archive identifier  
+**Output:** Downloaded files, sorted in folders by file type  
+
+```
+usage: Download_PRIDE_Project.py [-h] [-f FILETYPES [FILETYPES ...]] projectID
+
+Download files from PRIDE Archive for a given project.
+
+positional arguments:
+  projectID             PRIDE identifier from project to download files from
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILETYPES [FILETYPES ...]
+                        filetypes to download (msf, raw, txt, zip...)
+```
+
+
 ## MSF and MGF to MS2PIP SpecLib
 Reads an MSF file (SQLite DB), combines it with the matched (multiple) MGF files and writes a spectral library as 1 MS2PIP PEPREC and MGF file. Filters by a given FDR threshold, using q-values calculated from decoy hits or from Percolator.
 
@@ -31,23 +53,26 @@ optional arguments:
                         (default: False)
 ```
 
-## Download PRIDE Project
-Download PRIDE project files for a given PRIDE identifier. With the `-f` argument certain file types can be chosen for download.
 
-*Download_PRIDE_Project.py*  
-**Input:** PRIDE Archive identifier  
-**Output:** Downloaded files, sorted in folders by file type  
+## Split MS2PIP Spectral Library
+Split MS2PIP spectral library (PEPREC and MGF file) into a train and test set.
+
+*Split_MS2PIP_SpecLib.py*  
+**Input:** PEPREC and MGF file  
+**Output:** PEPREC and MGF files for both train and test data set.  
 
 ```
-usage: Download_PRIDE_Project.py [-h] [-f FILETYPES [FILETYPES ...]] projectID
+usage: Split_MS2PIP_SpecLib.py [-h] [-o OUT_FILENAME] [-f TEST_FRACTION]
+                               peprec_file mgf_file
 
-Download files from PRIDE Archive for a given project.
+Split MS2PIP spectral library (PEPREC and MGF file) into a train and test set.
 
 positional arguments:
-  projectID             PRIDE identifier from project to download files from
+  peprec_file       PEPREC file input
+  mgf_file          MGF file input
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -f FILETYPES [FILETYPES ...]
-                        filetypes to download (msf, raw, txt, zip...)
+  -h, --help        show this help message and exit
+  -o OUT_FILENAME   Name for output files (default: "SpecLib")
+  -f TEST_FRACTION  Fraction of input to use for test data set (default: 0.1)
 ```
