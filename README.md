@@ -76,3 +76,22 @@ optional arguments:
   -o OUT_FILENAME   Name for output files (default: "SpecLib")
   -f TEST_FRACTION  Fraction of input to use for test data set (default: 0.1)
 ```
+
+
+## PEPREC: Add Phospho Suffix
+Adds amino acid suffix to "Phospho" modifications in PEPREC file. "Phospho" becomes,
+for instance, "PhosphoY". Also, for unmodified peptides, a hyphen is added to the
+PEPREC file.
+
+*PEPREC_AddPhosphoSuffix.py*
+**Input:** Folder with PEPREC files
+**Output:** PEPREC files with amino acid suffix added to "Phospho" modifications
+usage: PEPREC_AddPhosphoSuffix.py [-h] [-f PEPREC_FOLDER] [-r]
+
+Add amino acid suffix to "Phospho" in modifications column in PEPREC file(s).
+
+optional arguments:
+  -h, --help        show this help message and exit
+  -f PEPREC_FOLDER  Folder with input PEPREC files (default: "")
+  -r                Replace the original PEPREC files instead of writing a new
+                    file (default: False)
