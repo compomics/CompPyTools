@@ -86,6 +86,8 @@ PEPREC file.
 *PEPREC_AddPhosphoSuffix.py*
 **Input:** Folder with PEPREC files
 **Output:** PEPREC files with amino acid suffix added to "Phospho" modifications
+
+```
 usage: PEPREC_AddPhosphoSuffix.py [-h] [-f PEPREC_FOLDER] [-r]
 
 Add amino acid suffix to "Phospho" in modifications column in PEPREC file(s).
@@ -95,3 +97,4 @@ optional arguments:
   -f PEPREC_FOLDER  Folder with input PEPREC files (default: "")
   -r                Replace the original PEPREC files instead of writing a new
                     file (default: False)
+```
