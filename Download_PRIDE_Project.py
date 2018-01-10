@@ -57,9 +57,12 @@ def run():
         f.write('{}\n'.format(response['accession']))
         f.write('{}\n'.format(response['publicationDate']))
         f.write('{}\n'.format(response['title']))
-        f.write('{}\n'.format(response['references'][0]['desc']))
-        for i, item in enumerate(response['references'][0]['ids']):
-            f.write(item + '\n')
+        try:
+            f.write('{}\n'.format(response['references'][0]['desc']))
+            for i, item in enumerate(response['references'][0]['ids']):
+                f.write(item + '\n')
+        except IndexError:
+            pass
 
     # Get dataframe with file info through PRIDE Archive REST API
     url = "{}/{}".format(get_files_url, args.projectID)
