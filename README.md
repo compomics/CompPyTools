@@ -98,3 +98,10 @@ optional arguments:
   -r                Replace the original PEPREC files instead of writing a new
                     file (default: False)
 ```
+
+## Send email using SendGrid
+
+Get (free) API key at https://sendgrid.com/.
+
+Code snippet (see code).
+
