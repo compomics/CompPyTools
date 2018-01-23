@@ -103,5 +103,10 @@ optional arguments:
 
 Get (free) API key at https://sendgrid.com/.
 
+```
+$ pip install sendgrid
+
+```
+
 Code snippet (see code).
 
