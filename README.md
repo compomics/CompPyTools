@@ -82,8 +82,8 @@ Adds amino acid suffix to "Phospho" modifications in PEPREC file. "Phospho" beco
 for instance, "PhosphoY". Also, for unmodified peptides, a hyphen is added to the
 PEPREC file.
 
-*PEPREC_AddPhosphoSuffix.py*
-**Input:** Folder with PEPREC files
+*PEPREC_AddPhosphoSuffix.py*  
+**Input:** Folder with PEPREC files  
 **Output:** PEPREC files with amino acid suffix added to "Phospho" modifications
 
 ```
@@ -99,11 +99,4 @@ optional arguments:
 ```
 
 ## Send email from Python using SendGrid
-
-Get (free) API key at https://sendgrid.com/ and install using
-
-```
-$ pip install sendgrid
-```
-
-Code snippet (see code).
+Get (free) API key at https://sendgrid.com/ and install using: `$ pip install sendgrid`. See code for code snippet.
