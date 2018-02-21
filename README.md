@@ -59,8 +59,7 @@ Split MS2PIP spectral library (PEPREC and MGF file) into a train and test set.
 
 *Split_MS2PIP_SpecLib.py*  
 **Input:** PEPREC and MGF file  
-**Output:** PEPREC and MGF files for both train and test data set.  
-
+**Output:** PEPREC and MGF files for both train and test data set. 
 ```
 usage: Split_MS2PIP_SpecLib.py [-h] [-o OUT_FILENAME] [-f TEST_FRACTION]
                                peprec_file mgf_file
@@ -99,14 +98,12 @@ optional arguments:
                     file (default: False)
 ```
 
-## Send email using SendGrid
+## Send email from Python using SendGrid
 
-Get (free) API key at https://sendgrid.com/.
+Get (free) API key at https://sendgrid.com/ and install using
 
 ```
 $ pip install sendgrid
-
 ```
 
 Code snippet (see code).
-
