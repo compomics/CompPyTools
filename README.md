@@ -116,8 +116,8 @@ becomes `Mods=2/5,C,Carbamidomethyl/12,M,Oxidation`.
 
 The `tqdm` libarary is used to display progress.
 
-*sptxt_sort_modifications.py*
-**Input:** .sptxt spectral library
+*sptxt_sort_modifications.py*  
+**Input:** .sptxt spectral library  
 **Output:** .sptxt spectral library with modifications sorted properly
 
 ```
