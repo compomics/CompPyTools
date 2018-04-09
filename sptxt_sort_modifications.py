@@ -3,8 +3,9 @@
 Sort modifications properly in a SpectraST .sptxt spectral library file.
 
 After parsing an MSP spectral library file through SpectraST to convert it to
-an .sptxt file, other software tools (Deliberator) threw an error: the
-modifications were not sorted by location in the sequence...
+an .sptxt file, other software tools (Deliberator) threw an error: `molecule
+{15.99}({57.02}` not found. The modifications were not sorted by location in
+the sequence...
 
 This script parses the .sptxt file and writes a new file with the modifications
 sorted properly. For instance, `Mods=2/12,M,Oxidation/5,C,Carbamidomethyl`
@@ -28,6 +29,7 @@ optional arguments:
   -h, --help  show this help message and exit
 ```
 """
+
 
 # Native libraries
 import re

@@ -59,7 +59,7 @@ Split MS2PIP spectral library (PEPREC and MGF file) into a train and test set.
 
 *Split_MS2PIP_SpecLib.py*  
 **Input:** PEPREC and MGF file  
-**Output:** PEPREC and MGF files for both train and test data set. 
+**Output:** PEPREC and MGF files for both train and test data set.
 ```
 usage: Split_MS2PIP_SpecLib.py [-h] [-o OUT_FILENAME] [-f TEST_FRACTION]
                                peprec_file mgf_file
@@ -100,3 +100,34 @@ optional arguments:
 
 ## Send email from Python using SendGrid
 Get (free) API key at https://sendgrid.com/ and install using: `$ pip install sendgrid`. See code for code snippet.
+
+
+## Sort modifications in .sptxt spectral library
+Sort modifications properly in a SpectraST .sptxt spectral library file.
+
+After parsing an MSP spectral library file through SpectraST to convert it to
+an .sptxt file, other software tools (Deliberator) threw an error: `molecule
+{15.99}({57.02}` not found. The modifications were not sorted by location in
+the sequence...
+
+This script parses the .sptxt file and writes a new file with the modifications
+sorted properly. For instance, `Mods=2/12,M,Oxidation/5,C,Carbamidomethyl`
+becomes `Mods=2/5,C,Carbamidomethyl/12,M,Oxidation`.
+
+The `tqdm` libarary is used to display progress.
+
+*sptxt_sort_modifications.py*
+**Input:** .sptxt spectral library
+**Output:** .sptxt spectral library with modifications sorted properly
+
+```
+usage: sptxt_sort_modifications.py [-h] input_file
+
+Sort modifications properly in a SpectraST .sptxt spectral library file.
+
+positional arguments:
+  input_file  Input .sptxt file
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
