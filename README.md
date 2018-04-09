@@ -59,8 +59,7 @@ Split MS2PIP spectral library (PEPREC and MGF file) into a train and test set.
 
 *Split_MS2PIP_SpecLib.py*  
 **Input:** PEPREC and MGF file  
-**Output:** PEPREC and MGF files for both train and test data set.  
-
+**Output:** PEPREC and MGF files for both train and test data set. 
 ```
 usage: Split_MS2PIP_SpecLib.py [-h] [-o OUT_FILENAME] [-f TEST_FRACTION]
                                peprec_file mgf_file
@@ -83,8 +82,8 @@ Adds amino acid suffix to "Phospho" modifications in PEPREC file. "Phospho" beco
 for instance, "PhosphoY". Also, for unmodified peptides, a hyphen is added to the
 PEPREC file.
 
-*PEPREC_AddPhosphoSuffix.py*
-**Input:** Folder with PEPREC files
+*PEPREC_AddPhosphoSuffix.py*  
+**Input:** Folder with PEPREC files  
 **Output:** PEPREC files with amino acid suffix added to "Phospho" modifications
 
 ```
@@ -98,3 +97,6 @@ optional arguments:
   -r                Replace the original PEPREC files instead of writing a new
                     file (default: False)
 ```
+
+## Send email from Python using SendGrid
+Get (free) API key at https://sendgrid.com/ and install using: `$ pip install sendgrid`. See code for code snippet.
